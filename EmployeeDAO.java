@@ -5,7 +5,7 @@ import java.util.List;
 public class EmployeeDAO {
 
     /**
-     * Grabs all available departments from the XAMPP database
+     * Fetches all unique department labels currently present in your XAMPP instance.
      */
     public List<String> getAllDepartments() throws SQLException {
         List<String> depts = new ArrayList<>();
@@ -23,7 +23,7 @@ public class EmployeeDAO {
     }
 
     /**
-     * Grabs all available projects from the XAMPP database
+     * Fetches all unique project tracking titles from your XAMPP instance.
      */
     public List<String> getAllProjects() throws SQLException {
         List<String> projs = new ArrayList<>();
@@ -41,18 +41,17 @@ public class EmployeeDAO {
     }
 
     /**
-     * Dynamically handles single/multi-selection lookups alongside active inversion flags
+     * Dynamically builds the multi-selection query logic, supporting exclusion flags.
      */
     public List<String> searchEmployees(List<String> depts, List<String> projs, boolean notDept, boolean notProj) throws SQLException {
         List<String> employees = new ArrayList<>();
         Connection conn = DatabaseConnection.getConnection();
         if (conn == null) return employees;
 
-        // Base structural relational table join map using your exact schema identifiers
         StringBuilder sql = new StringBuilder("SELECT DISTINCT e.Fname, e.Lname FROM EMPLOYEE e ");
         sql.append("LEFT JOIN DEPARTMENT d ON e.Dno = d.Dnumber WHERE 1=1 ");
 
-        // Append dynamic parameter arrays for Department inputs
+        // Build runtime parameters for Department lookups
         if (!depts.isEmpty()) {
             sql.append(" AND d.Dname ");
             if (notDept) sql.append("NOT ");
@@ -63,7 +62,7 @@ public class EmployeeDAO {
             sql.append(")");
         }
 
-        // Append dynamic parameter subqueries for Project inputs to cleanly isolate exclusions
+        // Build runtime subqueries for Project lookups to preserve correct mathematical sets
         if (!projs.isEmpty()) {
             if (notProj) {
                 sql.append(" AND e.Ssn NOT IN (");
@@ -86,7 +85,7 @@ public class EmployeeDAO {
 
         sql.append(" ORDER BY e.Lname, e.Fname;");
 
-        // Prepare statements dynamically to guarantee query payload parameter safety
+        // Map data arrays securely to prevent malicious payloads
         try (PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
             int paramIndex = 1;
             

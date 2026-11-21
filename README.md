@@ -72,20 +72,20 @@ In MySQL:
 ```sql
 CREATE DATABASE company;
 USE company;
-SOURCE C:/full/path/to/buildDB.sql;
+SOURCE C:/path/to/your/project/buildDB.sql;
 exit;
 ```
 
-Replace `C:/full/path/to/buildDB.sql` with the actual absolute path to `buildDB.sql`.
+Replace `C:/path/to/your/project/buildDB.sql` with the actual absolute path to your configuration file.
 
-The SQL file can also be run from Command Prompt:
+The SQL file can also be run directly from Command Prompt:
 
 ```bat
 "C:\xampp\mysql\bin\mysql.exe" -u root -e "CREATE DATABASE IF NOT EXISTS company"
-"C:\xampp\mysql\bin\mysql.exe" -u root company < "C:\full\path\to\buildDB.sql"
+"C:\xampp\mysql\bin\mysql.exe" -u root company < "C:\(\path\to\your/\)project\buildDB.sql"
 ```
 
-Verify the database:
+Verify the database tables are loaded:
 
 ```bat
 "C:\xampp\mysql\bin\mysql.exe" -u root -e "USE company; SHOW TABLES;"
@@ -93,7 +93,7 @@ Verify the database:
 
 ### 4. Compile and run
 
-Open Command Prompt in the project folder:
+Open Command Prompt in the project root folder:
 
 ```bat
 javac -cp "mysql-connector-j-9.1.0.jar;." *.java
@@ -109,37 +109,37 @@ The same commands work in PowerShell.
 Install Homebrew if it is not already available:
 
 ```bash
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+/bin/bash -c "\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Install Java and MySQL:
+Install Java and MySQL dependencies:
 
 ```bash
 brew install openjdk mysql
 ```
 
-Configure Java for the current shell:
+Configure Java environment for the active shell:
 
 ```bash
 export JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
+export PATH="\(JAVA_HOME/bin:\)PATH"
 ```
 
-Verify Java:
+Verify Java compiler status:
 
 ```bash
 java -version
 javac -version
 ```
 
-To make Java configuration permanent, add these lines to `~/.zshrc`:
+To make your Java path configurations permanent, append these lines to your `~/.zshrc` file:
 
 ```bash
 export JAVA_HOME=/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
+export PATH="\(JAVA_HOME/bin:\)PATH"
 ```
 
-Reload the configuration:
+Reload the shell configuration parameters:
 
 ```bash
 source ~/.zshrc
@@ -152,35 +152,29 @@ brew services start mysql
 mysqladmin ping
 ```
 
-Open MySQL:
+Open a local terminal session:
 
 ```bash
 mysql -u root
 ```
 
-If MySQL has a password, update `DB_PASS` in `DatabaseConnection.java` to match it.
+If your local MySQL environment requires a password, update `DB_PASS` in `DatabaseConnection.java`.
 
 ### 3. Create and initialize the COMPANY database
 
-Create the database:
+Create the database target:
 
 ```bash
 mysql -u root -e "CREATE DATABASE IF NOT EXISTS company"
 ```
 
-Run the SQL file using its absolute path:
+Run the SQL script utilizing its local directory path:
 
 ```bash
-mysql -u root company < "/Users/username/path/to/buildDB.sql"
+mysql -u root company < "/path/to/your/project/buildDB.sql"
 ```
 
-For the project location used during development:
-
-```bash
-mysql -u root company < "/Users/ranjan/Documents/ULM materials/DATABASE/DatabaseProj/buildDB.sql"
-```
-
-Verify the database:
+Verify the database tables are loaded:
 
 ```bash
 mysql -u root -e "USE company; SHOW TABLES;"
@@ -188,10 +182,10 @@ mysql -u root -e "USE company; SHOW TABLES;"
 
 ### 4. Compile and run
 
-Open Terminal in the project folder:
+Open Terminal inside your local repository workspace:
 
 ```bash
-cd "/Users/ranjan/Documents/ULM materials/DATABASE/DatabaseProj"
+cd "/path/to/your/project"
 javac -cp "mysql-connector-j-9.1.0.jar:." *.java
 java -cp "mysql-connector-j-9.1.0.jar:." Main
 ```
@@ -200,6 +194,6 @@ java -cp "mysql-connector-j-9.1.0.jar:." Main
 
 1. Enter `company` in the Database field.
 2. Click **Fill**.
-3. Select one or more departments or projects.
-4. Select **Not** beside departments or projects to exclude the selected values.
-5. Click **Search**.
+3. Select one or more departments or projects from the scrollable panels.
+4. Select **Not** beside departments or projects to exclude those criteria parameters.
+5. Click **Search** to extract your match records.

@@ -55,14 +55,14 @@ public class EmployeeSearchFrame extends JFrame {
         lblProject.setBounds(255, 63, 47, 14);
         contentPane.add(lblProject);
 
-        // ScrollPane integration wrapping the Department list
+        // ScrollPane tracking wrapper housing Department list elements
         lstDepartment = new JList<>(department);
         lstDepartment.setFont(new Font("Tahoma", Font.PLAIN, 12));
         JScrollPane scrollDept = new JScrollPane(lstDepartment);
         scrollDept.setBounds(36, 84, 172, 45);
         contentPane.add(scrollDept);
 
-        // ScrollPane integration wrapping the Project list
+        // ScrollPane tracking wrapper housing Project list elements
         lstProject = new JList<>(project);
         lstProject.setFont(new Font("Tahoma", Font.PLAIN, 12));
         JScrollPane scrollProject = new JScrollPane(lstProject);
@@ -82,7 +82,7 @@ public class EmployeeSearchFrame extends JFrame {
         lblEmployee.setBounds(52, 179, 89, 14);
         contentPane.add(lblEmployee);
 
-        // ScrollPane integration wrapping the employee JTextArea
+        // ScrollPane tracking wrapper housing Employee JTextArea display
         textAreaEmployee = new JTextArea();
         textAreaEmployee.setEditable(false);
         JScrollPane scrollEmployee = new JScrollPane(textAreaEmployee);
@@ -101,20 +101,29 @@ public class EmployeeSearchFrame extends JFrame {
          *             INTERACTION TRIGGERS
          * ========================================== */
 
+        // Note 5: Validate and load tables from database target
         btnDBFill.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // FIX DUPLICATES: Always drop existing model records before re-filling
+                department.clear();
+                project.clear();
                 clearSelectionsAndData();
+                
                 String dbName = txtDatabase.getText().trim();
                 
+                // INPUT VALIDATION: Intercept blank input requests gracefully
                 if (dbName.isEmpty()) {
-                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, "Please type a database name first.", "Missing Input", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, 
+                        "Please enter a valid database schema name.", 
+                        "Missing Input Data", 
+                        JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 try {
                     DatabaseConnection.connect(dbName);
                     
-                    // Fetch data maps from DAO layer to fill model elements
+                    // Hydrate UI list view states dynamically
                     for (String deptName : employeeDAO.getAllDepartments()) {
                         department.addElement(deptName);
                     }
@@ -123,18 +132,24 @@ public class EmployeeSearchFrame extends JFrame {
                     }
 
                 } catch (SQLException ex) {
+                    // Note 5 Error condition popup block handler
                     JOptionPane.showMessageDialog(EmployeeSearchFrame.this, 
-                        "Database Failure:\n" + ex.getMessage(), 
-                        "Database Connection Error", 
+                        "The database could not be opened.", 
+                        "Database Failure", 
                         JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
+        // Note 3 & 7: Execute dynamic lookup operations
         btnSearch.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // INPUT VALIDATION: Ensure an active database session exists
                 if (DatabaseConnection.getConnection() == null) {
-                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, "No active database connection found. Press 'Fill' first.", "Warning", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, 
+                        "No active database session. Enter a name and click 'Fill' first.", 
+                        "Connection Required", 
+                        JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
@@ -142,13 +157,22 @@ public class EmployeeSearchFrame extends JFrame {
                 List<String> selDepts = lstDepartment.getSelectedValuesList();
                 List<String> selProjs = lstProject.getSelectedValuesList();
 
+                // INPUT VALIDATION: Ensure at least one selection choice is highlighted
+                if (selDepts.isEmpty() && selProjs.isEmpty()) {
+                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, 
+                        "Please select at least one Department or Project from the lists to run a search.", 
+                        "No Criteria Selected", 
+                        JOptionPane.INFORMATION_MESSAGE);
+                    return;
+                }
+
                 try {
                     List<String> matches = employeeDAO.searchEmployees(
                         selDepts, selProjs, chckbxNotDept.isSelected(), chckbxNotProject.isSelected()
                     );
 
                     if (matches.isEmpty()) {
-                        textAreaEmployee.setText("No matching records found.");
+                        textAreaEmployee.setText("No matching records found inside the database.");
                         return;
                     }
 
@@ -159,11 +183,15 @@ public class EmployeeSearchFrame extends JFrame {
                     textAreaEmployee.setText(sb.toString());
 
                 } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, "Search Failure: " + ex.getMessage(), "Query Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(EmployeeSearchFrame.this, 
+                        "Query Execution Failed: " + ex.getMessage(), 
+                        "Database Error", 
+                        JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
+        // Note 6: Clear form input widgets
         btnClear.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 clearSelectionsAndData();
